@@ -57,8 +57,7 @@ ancient_individuals = 4 * (sample_size + 1) + 4 * (outpop_inds + 1)
 
 
 sample_size_internal = sample_size + 1 #add one individual for the reference sequence
-outpop_inds_internal = outpop_inds + 1
-popindexes= ["T"] * sample_size_internal + ["S1"] * sample_size_internal + ["S2"] * sample_size_internal + ["S3"] * sample_size_internal + ["O1"] * outpop_inds_internal + ["O2"] * outpop_inds_internal + ["O3"] * outpop_inds_internal + ["O4"] * outpop_inds_internal
+popindexes= ["T"] * sample_size_internal + ["S1"] * sample_size_internal + ["S2"] * sample_size_internal + ["S3"] * sample_size + ["O1"] * outpop_inds + ["O2"] * outpop_inds + ["O3"] * outpop_inds + ["O4"] * outpop_inds
 
 tree_seq_iter = sim_pop_ngs.sim_admix(t2T=divergence/5,t23=divergence/2,t123=divergence,ta=[50,50],f=[p1,p2],num_rep=nchr,nS=[sample_size_internal]*3,nT=sample_size_internal,nO=outpop_inds,seed=seed,r=1e-8,length=num_bases)
 
