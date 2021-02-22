@@ -1,0 +1,7 @@
+genotypename: all.bed
+snpname:  all.bim
+indivname:  all.fam
+outputformat: PACKEDANCESTRYMAP
+genotypeoutname:   all.geno
+snpoutname:    all.snp
+indivoutname:    all.ind

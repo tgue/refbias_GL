@@ -1,0 +1,7 @@
+genotypename: all.geno
+snpname: all.snp
+indivname: all.ind
+popleft: left.pops
+popright: right.pops
+allsnps: YES
+details: YES

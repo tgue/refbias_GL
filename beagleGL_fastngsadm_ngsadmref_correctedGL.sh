@@ -7,6 +7,8 @@ module load R/3.3.2
 module load samtools/1.5_debug
 module load bwa/0.7.17
 module load ADMIXTURE/1.3.0
+module load biopython/1.73
+module load AdmixTools/7.0.1
 
 REFPOP=$1
 PROP=$2
@@ -64,14 +66,36 @@ angsd -bam ${TMPDIR}/$REFPOP.$ITERATION.all.bamlist -checkBamHeaders 0 -nThreads
 cp ${TMPDIR}/$REFPOP.$ITERATION.all.bamlist $PROJ_PATH
 
 plink --tfile ${TMPDIR}/$REFPOP.$ITERATION.all --list-duplicate-vars --allow-extra-chr
-plink --tfile ${TMPDIR}/$REFPOP.$ITERATION.all --geno 0.5 --exclude plink.dupvar --allow-extra-chr --alleleACGT --make-bed --out ${TMPDIR}/$REFPOP.$ITERATION.all
+plink --tfile ${TMPDIR}/$REFPOP.$ITERATION.all --geno 0.5 --exclude plink.dupvar --allow-extra-chr --alleleACGT --make-bed --out ${TMPDIR}/all
 
-cp ${TMPDIR}/$REFPOP.$ITERATION.all* $PROJ_PATH
+#cp ${TMPDIR}/$REFPOP.$ITERATION.all* $PROJ_PATH
+
+##qpAdm
+
+yes "S2" | head -n 20 > ${TMPDIR}/all.tmp.pop
+yes "S3" | head -n 20 >> ${TMPDIR}/all.tmp.pop
+yes "T" | head -n 20 >> ${TMPDIR}/all.tmp.pop
+yes "O1" | head -n 20 >> ${TMPDIR}/all.tmp.pop
+yes "O2" | head -n 20 >> ${TMPDIR}/all.tmp.pop
+yes "O3" | head -n 20 >> ${TMPDIR}/all.tmp.pop
+yes "O4" | head -n 20 >> ${TMPDIR}/all.tmp.pop
+
+cut -d ' ' -f 2,3,4,5,6 ${TMPDIR}/all.fam > ${TMPDIR}/ind.tmp
+
+paste -d ' ' ${TMPDIR}/all.tmp.pop ${TMPDIR}/ind.tmp > ${TMPDIR}/all.fam
+
+cp ${PROJ_PATH}/*.par ${PROJ_PATH}/*.pops ${TMPDIR}
+
+convertf -p convertf.par
+
+cp all.* $PROJ_PATH
+
+qpAdm -p qpadm.par > $PROJ_PATH/qpadm_results/$REFPOP.$ITERATION.qpadm.out
 
 exit 1
 
 #prep for modified reads analysis
-module load biopython/1.73
+
 python prepare_snplist.py ${TMPDIR}/$REFPOP.$ITERATION.all.pruned.tped ref_seqs/ancient.$REFPOP.refgenome.fa > $REFPOP.refgenome.fa.snplist.txt
 
 sleep 61
@@ -227,6 +251,6 @@ admixture --haploid='*' --supervised -s $RANDOM ${TMPDIR}/$REFPOP.$ITERATION.all
 mv ${TMPDIR}/$REFPOP.$ITERATION.all.pruned.2.Q /proj/snic2020-2-10/sllstore2017087/nobackup/private/reference_bias/refbias_GL/admixture_results/$REFPOP.$PROP.$DIVERGENCE.$ITERATION.admixture.2.Q
 
 
-##qpAdm
+
 
 
