@@ -80,19 +80,25 @@ yes "O2" | head -n 20 >> ${TMPDIR}/all.tmp.pop
 yes "O3" | head -n 20 >> ${TMPDIR}/all.tmp.pop
 yes "O4" | head -n 20 >> ${TMPDIR}/all.tmp.pop
 
-cut -d ' ' -f 2,3,4,5,6 ${TMPDIR}/all.fam > ${TMPDIR}/ind.tmp
+rm ${TMPDIR}/all.index.ind
 
-paste -d ' ' ${TMPDIR}/all.tmp.pop ${TMPDIR}/ind.tmp > ${TMPDIR}/all.fam
+for i in {1..140}
+do
+   echo $i >> ${TMPDIR}/all.index.ind
+done
+
+cut -d ' ' -f 3,4,5 ${TMPDIR}/all.fam > ${TMPDIR}/ind.tmp
+
+paste -d ' ' ${TMPDIR}/all.tmp.pop ${TMPDIR}/all.index.ind ${TMPDIR}/ind.tmp  ${TMPDIR}/all.tmp.pop > ${TMPDIR}/all.fam
 
 cp ${PROJ_PATH}/*.par ${PROJ_PATH}/*.pops ${TMPDIR}
 
 convertf -p convertf.par
 
-cp all.* $PROJ_PATH
+#cp all.* $PROJ_PATH
 
 qpAdm -p qpadm.par > $PROJ_PATH/qpadm_results/$REFPOP.$ITERATION.qpadm.out
 
-exit 1
 
 #prep for modified reads analysis
 

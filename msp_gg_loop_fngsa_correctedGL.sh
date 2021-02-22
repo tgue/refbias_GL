@@ -8,7 +8,7 @@ module load R/3.3.2
 
 
 ITERATION=$2
-SEQ_LEN=100000
+SEQ_LEN=1000000
 SAMPLE=20
 P1=0.0
 P2=$1
@@ -32,6 +32,8 @@ cd $TMPDIR
 mkdir ref_seqs
 mkdir sim_fastq
 mkdir sim_bam
+
+#python -V
 
 python run_msprime_prep_gargammel.py --bases $SEQ_LEN --sample_per_pop $SAMPLE --seed $RANDOM --adm_prop $P1 $P2 --nchr $NCHR --divergence $DIVERGENCE
 
