@@ -70,34 +70,6 @@ plink --tfile ${TMPDIR}/$REFPOP.$ITERATION.all --geno 0.5 --exclude plink.dupvar
 
 #cp ${TMPDIR}/$REFPOP.$ITERATION.all* $PROJ_PATH
 
-##qpAdm
-
-yes "S2" | head -n 20 > ${TMPDIR}/all.tmp.pop
-yes "S3" | head -n 20 >> ${TMPDIR}/all.tmp.pop
-yes "T" | head -n 20 >> ${TMPDIR}/all.tmp.pop
-yes "O1" | head -n 20 >> ${TMPDIR}/all.tmp.pop
-yes "O2" | head -n 20 >> ${TMPDIR}/all.tmp.pop
-yes "O3" | head -n 20 >> ${TMPDIR}/all.tmp.pop
-yes "O4" | head -n 20 >> ${TMPDIR}/all.tmp.pop
-
-rm ${TMPDIR}/all.index.ind
-
-for i in {1..140}
-do
-   echo $i >> ${TMPDIR}/all.index.ind
-done
-
-cut -d ' ' -f 3,4,5 ${TMPDIR}/all.fam > ${TMPDIR}/ind.tmp
-
-paste -d ' ' ${TMPDIR}/all.tmp.pop ${TMPDIR}/all.index.ind ${TMPDIR}/ind.tmp  ${TMPDIR}/all.tmp.pop > ${TMPDIR}/all.fam
-
-cp ${PROJ_PATH}/*.par ${PROJ_PATH}/*.pops ${TMPDIR}
-
-convertf -p convertf.par
-
-#cp all.* $PROJ_PATH
-
-qpAdm -p qpadm.par > $PROJ_PATH/qpadm_results/$REFPOP.$ITERATION.qpadm.out
 
 
 #prep for modified reads analysis
@@ -257,6 +229,33 @@ admixture --haploid='*' --supervised -s $RANDOM ${TMPDIR}/$REFPOP.$ITERATION.all
 mv ${TMPDIR}/$REFPOP.$ITERATION.all.pruned.2.Q /proj/snic2020-2-10/sllstore2017087/nobackup/private/reference_bias/refbias_GL/admixture_results/$REFPOP.$PROP.$DIVERGENCE.$ITERATION.admixture.2.Q
 
 
+##qpAdm
 
+yes "S2" | head -n 20 > ${TMPDIR}/all.tmp.pop
+yes "S3" | head -n 20 >> ${TMPDIR}/all.tmp.pop
+yes "T" | head -n 20 >> ${TMPDIR}/all.tmp.pop
+yes "O1" | head -n 20 >> ${TMPDIR}/all.tmp.pop
+yes "O2" | head -n 20 >> ${TMPDIR}/all.tmp.pop
+yes "O3" | head -n 20 >> ${TMPDIR}/all.tmp.pop
+yes "O4" | head -n 20 >> ${TMPDIR}/all.tmp.pop
+
+rm ${TMPDIR}/all.index.ind
+
+for i in {1..140}
+do
+   echo $i >> ${TMPDIR}/all.index.ind
+done
+
+cut -d ' ' -f 3,4,5 ${TMPDIR}/all.fam > ${TMPDIR}/ind.tmp
+
+paste -d ' ' ${TMPDIR}/all.tmp.pop ${TMPDIR}/all.index.ind ${TMPDIR}/ind.tmp  ${TMPDIR}/all.tmp.pop > ${TMPDIR}/all.fam
+
+cp ${PROJ_PATH}/*.par ${PROJ_PATH}/*.pops ${TMPDIR}
+
+convertf -p convertf.par
+
+#cp all.* $PROJ_PATH
+
+qpAdm -p qpadm.par > $PROJ_PATH/qpadm_results/$REFPOP.$PROP.$DIVERGENCE.$ITERATION.qpadm.out
 
 
