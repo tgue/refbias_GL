@@ -81,6 +81,8 @@ for pop in T S1 S2 S3 O1 O2 O3 O4
 
 wait
 
+rm -rf sim_fastq
+rm *.fastq.gz
 
 #for REF in $(ls ${REFDIR}/*.fa)
 #	do

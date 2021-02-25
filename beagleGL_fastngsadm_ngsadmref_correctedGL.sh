@@ -63,6 +63,7 @@ sed -i "s/^/chr/g" ${TMPDIR}/$REFPOP.$ITERATION.all.pruned.tped
 ls *.O*.allchr.ancient.$REFPOP.refgenome.fa.bam | rev | sort | rev >> ${TMPDIR}/$REFPOP.$ITERATION.all.bamlist
 angsd -bam ${TMPDIR}/$REFPOP.$ITERATION.all.bamlist -checkBamHeaders 0 -nThreads 1 -doHaploCall 1 -doCounts 1 -doGeno -4 -doPost 2 -doPlink 2 -minMapQ 30 -minQ 30 -sites ${TMPDIR}/$REFPOP.$ITERATION.sites.txt -doMajorMinor 1 -GL 1 -domaf 1 -out ${TMPDIR}/$REFPOP.$ITERATION.all
 
+rm *.O*.allchr.ancient.$REFPOP.refgenome.fa.bam
 cp ${TMPDIR}/$REFPOP.$ITERATION.all.bamlist $PROJ_PATH
 
 plink --tfile ${TMPDIR}/$REFPOP.$ITERATION.all --list-duplicate-vars --allow-extra-chr
