@@ -46,6 +46,12 @@ angsd -bam ${TMPDIR}/$REFPOP.$ITERATION.all.bamlist -checkBamHeaders 0 -nThreads
 
 plink --tfile ${TMPDIR}/$REFPOP.$ITERATION.all --list-duplicate-vars --allow-extra-chr
 plink --tfile ${TMPDIR}/$REFPOP.$ITERATION.all --geno 0.5 --exclude plink.dupvar --allow-extra-chr --alleleACGT --make-bed --out ${TMPDIR}/$REFPOP.$ITERATION.all
+plink --tfile ${TMPDIR}/$REFPOP.$ITERATION.all --geno 0.5 --exclude plink.dupvar --allow-extra-chr --alleleACGT --recode transpose --out ${TMPDIR}/$REFPOP.$ITERATION.all
+
+python prepare_snplist.py ${TMPDIR}/$REFPOP.$ITERATION.all.tped ref_seqs/ancient.$REFPOP.refgenome.fa > $REFPOP.refgenome.fa.snplist.nonpruned.txt
+
+cut -f 1,4 ${TMPDIR}/$REFPOP.$ITERATION.all.bim > ${TMPDIR}/$REFPOP.$ITERATION.sites.txt
+sed -i "s/^/chr/g" ${TMPDIR}/$REFPOP.$ITERATION.sites.txt
 
 ##pruning
 
@@ -64,7 +70,7 @@ ls *.O*.allchr.ancient.$REFPOP.refgenome.fa.bam | rev | sort | rev >> ${TMPDIR}/
 angsd -bam ${TMPDIR}/$REFPOP.$ITERATION.all.bamlist -checkBamHeaders 0 -nThreads 1 -doHaploCall 1 -doCounts 1 -doGeno -4 -doPost 2 -doPlink 2 -minMapQ 30 -minQ 30 -sites ${TMPDIR}/$REFPOP.$ITERATION.sites.txt -doMajorMinor 1 -GL 1 -domaf 1 -out ${TMPDIR}/$REFPOP.$ITERATION.all
 
 rm *.O*.allchr.ancient.$REFPOP.refgenome.fa.bam
-cp ${TMPDIR}/$REFPOP.$ITERATION.all.bamlist $PROJ_PATH
+#cp ${TMPDIR}/$REFPOP.$ITERATION.all.bamlist $PROJ_PATH
 
 plink --tfile ${TMPDIR}/$REFPOP.$ITERATION.all --list-duplicate-vars --allow-extra-chr
 plink --tfile ${TMPDIR}/$REFPOP.$ITERATION.all --geno 0.5 --exclude plink.dupvar --allow-extra-chr --alleleACGT --make-bed --out ${TMPDIR}/all
@@ -229,6 +235,8 @@ yes "-" | head -n 20 >> ${TMPDIR}/$REFPOP.$ITERATION.all.pruned.pop
 admixture --haploid='*' --supervised -s $RANDOM ${TMPDIR}/$REFPOP.$ITERATION.all.pruned.bed 2
 mv ${TMPDIR}/$REFPOP.$ITERATION.all.pruned.2.Q /proj/snic2020-2-10/sllstore2017087/nobackup/private/reference_bias/refbias_GL/admixture_results/$REFPOP.$PROP.$DIVERGENCE.$ITERATION.admixture.2.Q
 
+admixture --haploid='*' --supervised -s $RANDOM ${TMPDIR}/$REFPOP.$ITERATION.all.bed 2
+mv ${TMPDIR}/$REFPOP.$ITERATION.all.2.Q /proj/snic2020-2-10/sllstore2017087/nobackup/private/reference_bias/refbias_GL/admixture_results/$REFPOP.$PROP.$DIVERGENCE.$ITERATION.admixture.nonpruned.2.Q
 
 ##qpAdm
 
@@ -260,3 +268,75 @@ convertf -p convertf.par
 qpAdm -p qpadm.par > $PROJ_PATH/qpadm_results/$REFPOP.$PROP.$DIVERGENCE.$ITERATION.qpadm.out
 
 
+
+##NGSadmix
+
+ls *.T.allchr.ancient.$REFPOP.refgenome.fa.bam *.S2.allchr.ancient.$REFPOP.refgenome.fa.bam *.S3.allchr.ancient.$REFPOP.refgenome.fa.bam | rev | sort | rev > ${TMPDIR}/$REFPOP.$ITERATION.all.bamlist
+
+angsd sites index ${TMPDIR}/$REFPOP.$ITERATION.sites.txt
+
+#GL in all
+angsd -GL 1 -out ${TMPDIR}/$REFPOP.$ITERATION.all -nThreads 1 -doGlf 2 -doMajorMinor 1 -sites ${TMPDIR}/$REFPOP.$ITERATION.sites.txt -doMaf 1 -bam ${TMPDIR}/$REFPOP.$ITERATION.all.bamlist -minQ 30 -minMapQ 30 -remove_bads 1 -uniqueOnly 1 -doPost 2
+
+gzip -d ${TMPDIR}/$REFPOP.$ITERATION.all.beagle.gz
+NGSadmix -likes ${TMPDIR}/$REFPOP.$ITERATION.all.beagle -K 2 -outfiles ${TMPDIR}/$REFPOP.$ITERATION.all.NGSADM.beagle
+cp ${TMPDIR}/*NGSADM.beagle.qopt $PROJ_PATH/ngsadmix_results/
+
+
+#correct GLs in sources
+index=1
+cat ${TMPDIR}/$REFPOP.$ITERATION.all.bamlist | while read bamfile; do
+#modify reads
+samtools calmd $bamfile ref_seqs/ancient.$REFPOP.refgenome.fa | ./modify_read_alternative.py $REFPOP.refgenome.fa.snplist.nonpruned.txt | samtools view -b -u - > modified.$bamfile
+
+#remap
+bwa aln -l 16500 -n 0.01 -o 2 -t 1 ref_seqs/ancient.$REFPOP.refgenome.fa -b modified.$bamfile \
+| bwa samse ref_seqs/ancient.$REFPOP.refgenome.fa - modified.$bamfile  \
+| samtools view -F 4 -h - \
+| samtools sort -o modified.remap.$bamfile -
+
+samtools index modified.remap.$bamfile
+
+samtools calmd -b modified.remap.$bamfile ref_seqs/ancient.$REFPOP.refgenome.fa > modified.remap.MD.$bamfile
+
+samtools index modified.remap.MD.$bamfile
+
+samtools merge merged.modified.remap.$bamfile modified.remap.MD.$bamfile $bamfile
+
+awk '{print $1,$2-1,$2}' $REFPOP.refgenome.fa.snplist.nonpruned.txt > $REFPOP.refgenome.fa.snplist.txt.bed
+python count_reads_mpB.py merged.modified.remap.$bamfile ref_seqs/ancient.$REFPOP.refgenome.fa ${TMPDIR}/$REFPOP.$ITERATION.all.pruned.tped $REFPOP.refgenome.fa.snplist.txt.bed > counts.$bamfile
+
+
+python correct_GL.py ${TMPDIR}/$REFPOP.$ITERATION.all.beagle counts.$bamfile $index
+let "index += 1" 
+cp ${TMPDIR}/$REFPOP.$ITERATION.all.beagle.corrected ${TMPDIR}/$REFPOP.$ITERATION.all.beagle
+#cp ${TMPDIR}/$REFPOP.$ITERATION.sources.beagle.input.corrected ${PROJ_PATH}/$REFPOP.$ITERATION.sources.beagle.input.corrected.$index
+#cp counts.$bamfile ${PROJ_PATH}
+done
+
+
+NGSadmix -likes ${TMPDIR}/$REFPOP.$ITERATION.all.beagle -K 2 -outfiles ${TMPDIR}/$REFPOP.$ITERATION.all.NGSADM.beagle.corrected
+cp ${TMPDIR}/*NGSADM.beagle.corrected.qopt $PROJ_PATH/ngsadmix_results/
+
+
+#GL in all (pruned)
+angsd -GL 1 -out ${TMPDIR}/$REFPOP.$ITERATION.all -nThreads 1 -doGlf 2 -doMajorMinor 1 -sites ${TMPDIR}/$REFPOP.$ITERATION.sites.pruned.txt -doMaf 1 -bam ${TMPDIR}/$REFPOP.$ITERATION.all.bamlist -minQ 30 -minMapQ 30 -remove_bads 1 -uniqueOnly 1 -doPost 2
+
+gzip -d ${TMPDIR}/$REFPOP.$ITERATION.all.beagle.gz
+NGSadmix -likes ${TMPDIR}/$REFPOP.$ITERATION.all.beagle -K 2 -outfiles ${TMPDIR}/$REFPOP.$ITERATION.all.NGSADM.beagle.pruned
+cp ${TMPDIR}/*NGSADM.beagle.pruned.qopt $PROJ_PATH/ngsadmix_results/
+
+
+#correct GLs
+index=1
+cat ${TMPDIR}/$REFPOP.$ITERATION.all.bamlist | while read bamfile; do
+
+python correct_GL.py ${TMPDIR}/$REFPOP.$ITERATION.all.beagle counts.$bamfile $index
+let "index += 1" 
+cp ${TMPDIR}/$REFPOP.$ITERATION.all.beagle.corrected ${TMPDIR}/$REFPOP.$ITERATION.all.beagle
+#cp ${TMPDIR}/$REFPOP.$ITERATION.sources.beagle.input.corrected ${PROJ_PATH}/$REFPOP.$ITERATION.sources.beagle.input.corrected.$index
+#cp counts.$bamfile ${PROJ_PATH}
+done
+
+NGSadmix -likes ${TMPDIR}/$REFPOP.$ITERATION.all.beagle -K 2 -outfiles ${TMPDIR}/$REFPOP.$ITERATION.all.NGSADM.beagle.pruned.corrected
+cp ${TMPDIR}/*NGSADM.beagle.pruned.corrected.qopt $PROJ_PATH/ngsadmix_results/
