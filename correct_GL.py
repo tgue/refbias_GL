@@ -28,6 +28,7 @@ fout_uncorr.write(l)
 for line in GLfile:
 	split=line.split()
 	if not RBdic.has_key(split[0]):
+		fout_uncorr.write('\t'.join(split) + '\n')
 		fout.write('\t'.join(split) + '\n')
 		continue	
 	elif not refallele_dic.has_key(split[0]) or not altallele_dic.has_key(split[0]):
@@ -43,21 +44,24 @@ for line in GLfile:
 
 	r=float(RBdic[split[0]])
 
-	s=(1-r)**2*float(split[ref]) + r*(1-r)*float(split[1+3*ind_num]) + r**2*float(split[alt])
+	s=(1-r)**2*float(split[ref]) + 2*r*(1-r)*float(split[1+3*ind_num]) + r**2*float(split[alt])
 
-	fout_uncorr.write('\t'.join(split) + '\n')
+	
 
 	if not s>0.0:
 		continue	
 
+	fout_uncorr.write('\t'.join(split) + '\n')
+
 	split[ref]=str((1-r)**2*float(split[ref])/s)
-	split[1+3*ind_num]=str(r*(1-r)*float(split[1+3*ind_num])/s)
+	split[1+3*ind_num]=str(2*r*(1-r)*float(split[1+3*ind_num])/s)
 	split[alt]=str(r**2*float(split[alt])/s)
 
-
+	
 	fout.write('\t'.join(split) + '\n')
 
 fout.close()
+fout_uncorr.close()
 		
 
 

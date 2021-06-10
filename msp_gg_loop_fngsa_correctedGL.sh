@@ -8,12 +8,13 @@ module load R/3.3.2
 
 
 ITERATION=$2
-SEQ_LEN=1000000
+SEQ_LEN=10000000
 SAMPLE=20
+SAMPLE_TARGET=20
 P1=0.0
 P2=$1
-NCHR=20
-CORES=1
+NCHR=5
+CORES=$5
 DIVERGENCE=$3
 SEQ_COVERAGE=$4
 PROJ_PATH=/proj/snic2020-2-10/sllstore2017087/nobackup/private/reference_bias/refbias_GL/
@@ -49,6 +50,14 @@ for pop in T S1 S2 S3 O1 O2 O3 O4
 	do
 	for (( ind=1; ind<=$SAMPLE; ind++ ))
 		do
+		if [ "$pop" == "T" ] #restrict number of individuals in target pop to $SAMPLE_TARGET
+			then
+			if [ $ind -gt $SAMPLE_TARGET ]
+				then
+				continue
+			fi
+		fi
+
 		for (( c=1; c<=$NCHR; c++ ))
 			do
 			rm data/endo/*
@@ -125,9 +134,9 @@ rm *.fastq.gz
 for refpop in S1 S2 S3
 	do
 	#./beagleGL_fastngsadm.sh $refpop $P2 $ITERATION
-	./beagleGL_fastngsadm_ngsadmref_correctedGL.sh $refpop $P2 $ITERATION $DIVERGENCE
+	./beagleGL_fastngsadm_ngsadmref_correctedGL.sh $refpop $P2 $ITERATION $DIVERGENCE $CORES
 	done
 
 wait
 
-
+rm -r $TMPDIR/*
