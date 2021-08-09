@@ -28,7 +28,9 @@ angsd -GL 1 -out ${TMPDIR}/$REFPOP.$ITERATION.genolike -nThreads $CORES -doGlf 2
 zcat ${TMPDIR}/$REFPOP.$ITERATION.genolike.beagle.gz | tail -n +2 | cut -f 1 | shuf -n 200000 >  ${TMPDIR}/$REFPOP.sites.$ITERATION.tmp
 cut -f 1 -d '_' ${TMPDIR}/$REFPOP.sites.$ITERATION.tmp > ${TMPDIR}/$REFPOP.chr.$ITERATION.tmp
 cut -f 2 -d '_' ${TMPDIR}/$REFPOP.sites.$ITERATION.tmp > ${TMPDIR}/$REFPOP.bp.$ITERATION.tmp
-paste ${TMPDIR}/$REFPOP.chr.$ITERATION.tmp  ${TMPDIR}/$REFPOP.bp.$ITERATION.tmp | sort -b -k 1,1 -k 2,2n  > ${TMPDIR}/$REFPOP.$ITERATION.sites.txt
+cut -f 3 -d '_' ${TMPDIR}/$REFPOP.sites.$ITERATION.tmp > ${TMPDIR}/$REFPOP.a1.$ITERATION.tmp
+cut -f 4 -d '_' ${TMPDIR}/$REFPOP.sites.$ITERATION.tmp > ${TMPDIR}/$REFPOP.a2.$ITERATION.tmp
+paste ${TMPDIR}/$REFPOP.chr.$ITERATION.tmp  ${TMPDIR}/$REFPOP.bp.$ITERATION.tmp ${TMPDIR}/$REFPOP.a1.$ITERATION.tmp ${TMPDIR}/$REFPOP.a2.$ITERATION.tmp | sort -b -k 1,1 -k 2,2n  > ${TMPDIR}/$REFPOP.$ITERATION.sites.txt
 #cp ${TMPDIR}/$REFPOP.$ITERATION.genolike.beagle.gz $PROJ_PATH
 #cp ${TMPDIR}/$REFPOP.$ITERATION.sites.txt $PROJ_PATH
 

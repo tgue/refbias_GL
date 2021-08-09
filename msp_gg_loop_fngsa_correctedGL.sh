@@ -5,6 +5,8 @@ module load samtools/1.5_debug
 module load bwa/0.7.17
 module load AdapterRemoval/2.1.7
 module load R/3.3.2
+module load python/3.8.7
+
 
 
 ITERATION=$2
@@ -134,7 +136,7 @@ rm *.fastq.gz
 for refpop in S1 S2 S3
 	do
 	#./beagleGL_fastngsadm.sh $refpop $P2 $ITERATION
-	./beagleGL_fastngsadm_ngsadmref_correctedGL.sh $refpop $P2 $ITERATION $DIVERGENCE $CORES
+	./beagleGL_fastngsadm_ngsadmref_pysam.sh $refpop $P2 $ITERATION $DIVERGENCE $CORES
 	done
 
 wait

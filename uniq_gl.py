@@ -18,7 +18,7 @@ last_id=''
 
 for l in f:
 	split=l.split()
-	if split[0]!=last_id and sites_dic.has_key(split[0]):
+	if split[0]!=last_id and split[0] in sites_dic:
 		fo.write("\t".join(split[:3]+split[ind*3:(ind*3+3)])+'\n')
 	last_id=split[0]
 

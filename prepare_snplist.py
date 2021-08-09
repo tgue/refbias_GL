@@ -40,7 +40,7 @@ for l in f:
 			ref=alleles[1]
 			alt=alleles[0]
 
-		print c,p,ref,alt
+		print(c,p,ref,alt)
 
 f.close()
 

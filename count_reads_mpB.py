@@ -28,7 +28,7 @@ for l in f:
 		alleles.remove('N')
 	if len(alleles)!=2:
 		continue
-	if not bedfilter.has_key((split[0],split[3])):
+	if not (split[0],split[3]) in bedfilter:
 		continue
 	snppos[(split[0],split[3])]=alleles
 	snpid[(split[0],split[3])]=split[1]
@@ -36,13 +36,13 @@ f.close()
 
 
 
-cmd='samtools mpileup -B -q %s -Q 30 -f %s -l %s %s' %(mq,reffile,bedfile,bamfile)
+cmd='samtools mpileup -B -q %s -f %s -l %s %s' %(mq,reffile,bedfile,bamfile)
 process = Popen(cmd, shell=True, stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+stdout,stderr = process.communicate()
 
-
-for l in iter(process.stdout.readline,''):
+for l in stdout.decode().split('\n'):
 	split=l.split('\t')
-	if len(split)>1 and snppos.has_key((split[0],split[1])):
+	if len(split)>1 and (split[0],split[1]) in snppos:
 		if len(split[4]):
 			alleles=snppos[(split[0],split[1])]
 			pileup=split[4].upper()
@@ -58,6 +58,6 @@ for l in iter(process.stdout.readline,''):
 			if (ref_count+alt_count)==0:
 				continue
 			prop=float(ref_count)/(ref_count+alt_count)
-			print ref_count, alt_count, ref_allele, alt_allele, prop, snpid[(split[0],split[1])]
+			print(ref_count, alt_count, ref_allele, alt_allele, prop, snpid[(split[0],split[1])])
 
 

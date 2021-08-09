@@ -41,7 +41,7 @@ nchr = int(args.nchr[0])
 divergence = int(args.divergence[0])
 outpop_inds=20
 
-print p1,p2
+#print p1,p2
 
 # Number of contamination individuals
 contamination_individuals = 0 
@@ -113,9 +113,9 @@ for chrom, sim in enumerate(tree_seq_iter):
 	added_intervals = []
 	with open(newick_filepath, 'r') as newick_file:
 	    
-	    for line, interval in zip(newick_file, intervals):
-		added_intervals.append('[' + str(interval) + '] ' + line)
-		partitions += 1
+		for line, interval in zip(newick_file, intervals):
+			added_intervals.append('[' + str(interval) + '] ' + line)
+			partitions += 1
 
 	# Overwrite Newick file with added intervals
 	with open(newick_filepath, 'w') as newick_file:
@@ -160,15 +160,15 @@ for chrom, sim in enumerate(tree_seq_iter):
 
 	# Write only sequence to file
 	with open(seqgen_filepath, 'w') as seqgen_file:
-	    for line in chr_sequences:
-		seqgen_file.write(line.split()[1] + '\n')
+		for line in chr_sequences:
+			seqgen_file.write(line.split()[1] + '\n')
 
 	##############################################
 	# Split seq-gen output into individual files #
 	##############################################
 	# Split individuals
 	with open(seqgen_filepath, 'r') as seqgen_file:
-	    chr_sequences = seqgen_file.readlines()
+		chr_sequences = seqgen_file.readlines()
 
 	chr_index = 0
 	    
@@ -222,22 +222,22 @@ for chrom, sim in enumerate(tree_seq_iter):
 
 	for j in range(ancient_individuals):
 
-	    # Individual string
+		# Individual string
 
-	    ind_string = 'ancient.%s.%s' %(divmod(j,sample_size_internal)[1],popindexes[j])
+		ind_string = 'ancient.%s.%s' %(divmod(j,sample_size_internal)[1],popindexes[j])
 		
-	    # Write two chromosomes
-	    for i in range(2):
-		filename = ind_string + '.%s.chr%s.fa' %(i + 1,chrom + 1)
+		# Write two chromosomes
+		for i in range(2):
+			filename = ind_string + '.%s.chr%s.fa' %(i + 1,chrom + 1)
 
-		with open(anc_dir + filename, 'w') as f:
-		    # Write header
-		    #f.write('>ancient_%s_%s_chr%s\n' %(j,popindexes[j],chrom + 1))
-		    f.write('>chr%s\n' %(chrom + 1))
-		    # Write sequence
-		    f.write(chr_sequences[chr_index])
+			with open(anc_dir + filename, 'w') as f:
+				# Write header
+				#f.write('>ancient_%s_%s_chr%s\n' %(j,popindexes[j],chrom + 1))
+				f.write('>chr%s\n' %(chrom + 1))
+				# Write sequence
+				f.write(chr_sequences[chr_index])
 
-		chr_index += 1
+			chr_index += 1
 """
 ##################
 # Write segsites #

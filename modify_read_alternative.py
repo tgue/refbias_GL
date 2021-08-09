@@ -10,7 +10,7 @@ alt_dict={}
 snpfile=open(sys.argv[1])
 for l in snpfile:
 	split=l.split()
-	if ref_dict.has_key(split[0]):
+	if split[0] in ref_dict:
 		ref_dict[split[0]][int(split[1])]=split[2]
 		alt_dict[split[0]][int(split[1])]=split[3]
 	else:
@@ -21,19 +21,19 @@ for l in snpfile:
 
 snpfile.close()
 
-chrs=ref_dict.keys()
+chrs=list(ref_dict.keys())
 chrs.sort()
 key_dict={}
 
 for c in chrs:
-	keys=ref_dict[c].keys()
+	keys=list(ref_dict[c].keys())
 	keys.sort()
 	key_dict[c]=keys
 		
 
 for l in sys.stdin:
 	if l[0] == '@':
-		print l.rstrip()
+		print(l.rstrip())
 		continue
 	split=l.rstrip().split('\t')
 	read=split[9]
@@ -71,7 +71,7 @@ for l in sys.stdin:
 		index=bisect_right(keys,start)-1
 		split[0]="mod_"+split[0]
 
-		for i in xrange(index,len(keys)):
+		for i in range(index,len(keys)):
 			k=keys[i]
 			if k<start:
 				continue
@@ -85,4 +85,4 @@ for l in sys.stdin:
 			elif k>end:
 				break
 		split[9]=''.join(read)
-		print '\t'.join(split)
+		print('\t'.join(split))
