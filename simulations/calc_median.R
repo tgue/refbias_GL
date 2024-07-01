@@ -1,4 +1,4 @@
-tab=read.table('q.summary.1X.txt')
+tab=read.table('q.summary.0.5X.txt')
 tab$method=paste(tab$V8,tab$V7)
 
 refs=unique(tab$V1)

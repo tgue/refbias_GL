@@ -1,6 +1,6 @@
-genotypename: all.bed
-snpname:  all.bim
-indivname:  all.fam
+genotypename: allpop.bed
+snpname:  allpop.bim
+indivname:  allpop.fam
 outputformat: PACKEDANCESTRYMAP
 genotypeoutname:   all.geno
 snpoutname:    all.snp
