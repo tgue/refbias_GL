@@ -6,7 +6,7 @@ This repository contains scripts used to conduct simulations of realistic aDNA s
 
 This step follows what we presented in [Günther and Nettelblad (2019)](https://doi.org/10.1371/journal.pgen.1008302) and (https://bitbucket.org/tguenther/refbias/src/master/).
 
-``
+```
 python prepare_snplist.py $TPED $REFGENOME > snplist.txt
 
 awk '{print $1,$2-1,$2}' snplist.txt > snplist.txt.bed
@@ -35,7 +35,7 @@ samtools merge $BAMFILE.merged.bam $BAMFILE.modified.remap.MD.bam $BAMFILE
 
 
 python count_reads_mpB.py $BAMFILE.merged.bam $REFGENOME $TPED snplist.txt.bed > counts.$BAMFILE
-``
+```
 
 
 ## Simulations
