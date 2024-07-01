@@ -7,6 +7,7 @@ bedfile=sys.argv[4]
 bamfile=sys.argv[1]
 
 mq=30
+new_SNP_ID=True
 
 snppos={}
 snpid={}
@@ -31,7 +32,13 @@ for l in f:
 	if not (split[0],split[3]) in bedfilter:
 		continue
 	snppos[(split[0],split[3])]=alleles
-	snpid[(split[0],split[3])]=split[1]
+	if new_SNP_ID:
+		if split[0].find('chr')>=0:
+			snpid[(split[0],split[3])]="%s_%s" %(split[0],split[3])
+		else:
+			snpid[(split[0],split[3])]="chr%s_%s" %(split[0],split[3])
+	else:
+		snpid[(split[0],split[3])]=split[1]
 f.close()
 
 

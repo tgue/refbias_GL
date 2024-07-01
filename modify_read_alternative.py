@@ -41,6 +41,9 @@ for l in sys.stdin:
 	ch=split[2]
 	bp=int(split[3])
 
+	if l.find('MD:Z:')<0:
+		continue
+
 	md=l.rstrip().split('MD:Z:')[1].split('\t')[0]
 	if md.find('^')>0:
 		continue

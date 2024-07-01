@@ -30,6 +30,8 @@ for l in f:
 		alleles.remove('N')
 	if len(alleles)!=2:
 		continue
+	if alleles[0] not in nucs or alleles[1] not in nucs:
+		continue
 	c=split[0]
 	p=int(split[3])
 	if seq_dic[c][p-1] in alleles:
