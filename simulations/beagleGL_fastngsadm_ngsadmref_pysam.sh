@@ -157,13 +157,13 @@ module load pysam/0.15.3-python3.7.2
 
 #calculate GL in T
 cat ${TMPDIR}/$REFPOP.$ITERATION.T.bamlist | while read bamfile; do
-python pysam_worker.py $bamfile $REFPOP.refgenome.fa.snplist.txt counts.$bamfile ref_seqs/ancient.$REFPOP.refgenome.fa ${TMPDIR}/$REFPOP.$ITERATION.T.gl
+python GL_calculator.py $bamfile $REFPOP.refgenome.fa.snplist.txt counts.$bamfile ref_seqs/ancient.$REFPOP.refgenome.fa ${TMPDIR}/$REFPOP.$ITERATION.T.gl
 done
 
 
 #calculate GL in sources
 cat ${TMPDIR}/$REFPOP.$ITERATION.sources.bamlist | while read bamfile; do
-python pysam_worker.py $bamfile $REFPOP.refgenome.fa.snplist.txt counts.$bamfile ref_seqs/ancient.$REFPOP.refgenome.fa ${TMPDIR}/$REFPOP.$ITERATION.sources.beagle
+python GL_calculator.py $bamfile $REFPOP.refgenome.fa.snplist.txt counts.$bamfile ref_seqs/ancient.$REFPOP.refgenome.fa ${TMPDIR}/$REFPOP.$ITERATION.sources.beagle
 done
 cp ${TMPDIR}/$REFPOP.$ITERATION.sources.beagle ${TMPDIR}/$REFPOP.$ITERATION.sources.beagle.input
 cp ${TMPDIR}/$REFPOP.$ITERATION.sources.beagle.corrected ${TMPDIR}/$REFPOP.$ITERATION.sources.beagle.input.corrected
@@ -394,7 +394,7 @@ rm ${TMPDIR}/$REFPOP.$ITERATION.all.beagle*
 
 #calculate GL in all
 cat ${TMPDIR}/$REFPOP.$ITERATION.all.bamlist | while read bamfile; do
-python pysam_worker.py $bamfile $REFPOP.refgenome.fa.snplist.txt counts.$bamfile ref_seqs/ancient.$REFPOP.refgenome.fa ${TMPDIR}/$REFPOP.$ITERATION.all.beagle
+python GL_calculator.py $bamfile $REFPOP.refgenome.fa.snplist.txt counts.$bamfile ref_seqs/ancient.$REFPOP.refgenome.fa ${TMPDIR}/$REFPOP.$ITERATION.all.beagle
 done
 
 
@@ -416,7 +416,7 @@ python prepare_snplist.py ${TMPDIR}/$REFPOP.$ITERATION.all.pruned.tped ref_seqs/
 
 #calculate GL in all
 cat ${TMPDIR}/$REFPOP.$ITERATION.all.bamlist | while read bamfile; do
-python pysam_worker.py $bamfile $REFPOP.refgenome.fa.snplist.pruned.txt counts.$bamfile ref_seqs/ancient.$REFPOP.refgenome.fa ${TMPDIR}/$REFPOP.$ITERATION.all.beagle
+python GL_calculator.py $bamfile $REFPOP.refgenome.fa.snplist.pruned.txt counts.$bamfile ref_seqs/ancient.$REFPOP.refgenome.fa ${TMPDIR}/$REFPOP.$ITERATION.all.beagle
 done
 
 
