@@ -7,7 +7,7 @@ This repository contains scripts used to conduct simulations of realistic aDNA s
 ## Calculating corrected genotype likelihoods
 
 ### Measuring mapping bias per individual and site
-First, we need to assess mapping bias per individual. This step follows what we presented in [Günther and Nettelblad (2019)](https://doi.org/10.1371/journal.pgen.1008302) and (https://bitbucket.org/tguenther/refbias/src/master/).
+First, we need to assess mapping bias per individual. This step follows what we presented in [Günther and Nettelblad (2019)](https://doi.org/10.1371/journal.pgen.1008302) and https://bitbucket.org/tguenther/refbias/src/master/.
 
 Assuming that we have a Plink TPED file with biallelic SNPs and a reference genome, we prepare a list of SNPs with reference and alternative allele (using BioPython) and a corresponding .bed file:
 
