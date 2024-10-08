@@ -39,7 +39,7 @@ grep S1 GT.fam | grep -v "pop_S1_sample_22" > keep.txt
 
 plink --bfile GT --keep keep.txt --make-bed --out GT.keep
 plink --bfile GT.keep --maf 0.1 --make-bed --out GT.maf
-plink --bfile GT.maf --thin-count 100000 --make-bed --out GT.asc
+plink --bfile GT.maf --thin-count 100000 --make-bed --out GT.asc --seed $ITERATION
 
 cp GT* GL* ${PROJ_PATH}/ANGSD_stats
 
@@ -58,7 +58,7 @@ angsd sites index ${TMPDIR}/$REFPOP.$ITERATION.sites.txt
 #do haplocalls in all
 ls *.T.allchr.ancient.$REFPOP.refgenome.fa.bam *.S2.allchr.ancient.$REFPOP.refgenome.fa.bam *.S3.allchr.ancient.$REFPOP.refgenome.fa.bam | rev | sort | rev > ${TMPDIR}/$REFPOP.$ITERATION.all.bamlist
 cp ${TMPDIR}/$REFPOP.$ITERATION.all.bamlist ${TMPDIR}/$REFPOP.$ITERATION.noO.bamlist
-angsd -bam ${TMPDIR}/$REFPOP.$ITERATION.all.bamlist -checkBamHeaders 0 -nThreads $CORES -doHaploCall 1 -doCounts 1 -doGeno -4 -doPost 2 -doPlink 2 -minMapQ 30 -minQ 30 -sites ${TMPDIR}/$REFPOP.$ITERATION.sites.txt -doMajorMinor 1 -GL 1 -domaf 1 -out ${TMPDIR}/$REFPOP.$ITERATION.all
+angsd -bam ${TMPDIR}/$REFPOP.$ITERATION.all.bamlist -checkBamHeaders 0 -nThreads $CORES -doHaploCall 1 -seed $ITERATION -doCounts 1 -doGeno -4 -doPost 2 -doPlink 2 -minMapQ 30 -minQ 30 -sites ${TMPDIR}/$REFPOP.$ITERATION.sites.txt -doMajorMinor 1 -GL 2 -domaf 1 -out ${TMPDIR}/$REFPOP.$ITERATION.all
 haploToPlink ${TMPDIR}/$REFPOP.$ITERATION.all.haplo.gz ${TMPDIR}/$REFPOP.$ITERATION.all
 sed -i "s/N/0/g" ${TMPDIR}/$REFPOP.$ITERATION.all.tped
 
@@ -96,7 +96,7 @@ sleep 61
 
 #do haplocalls in all including outgroups for qpadm
 ls *.O*.allchr.ancient.$REFPOP.refgenome.fa.bam | rev | sort | rev >> ${TMPDIR}/$REFPOP.$ITERATION.all.bamlist
-angsd -bam ${TMPDIR}/$REFPOP.$ITERATION.all.bamlist -checkBamHeaders 0 -nThreads $CORES -doHaploCall 1 -doCounts 1 -doGeno -4 -doPost 2 -doPlink 2 -minMapQ 30 -minQ 30 -sites ${TMPDIR}/$REFPOP.$ITERATION.sites.txt -doMajorMinor 1 -GL 1 -domaf 1 -out ${TMPDIR}/$REFPOP.$ITERATION.allpop
+angsd -bam ${TMPDIR}/$REFPOP.$ITERATION.all.bamlist -checkBamHeaders 0 -nThreads $CORES -doHaploCall 1 -doCounts 1 -seed $ITERATION -doGeno -4 -doPost 2 -doPlink 2 -minMapQ 30 -minQ 30 -sites ${TMPDIR}/$REFPOP.$ITERATION.sites.txt -doMajorMinor 1 -GL 2 -domaf 1 -out ${TMPDIR}/$REFPOP.$ITERATION.allpop
 haploToPlink ${TMPDIR}/$REFPOP.$ITERATION.allpop.haplo.gz ${TMPDIR}/$REFPOP.$ITERATION.allpop
 sed -i "s/N/0/g" ${TMPDIR}/$REFPOP.$ITERATION.allpop.tped
 
