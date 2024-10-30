@@ -9,6 +9,9 @@ nucs=['A','C','G','T']
 pileup_char=nucs+[',']+['.']
 GL_miss=[1/3,1/3,1/3]
 
+MIN_MQ=30
+MIN_BQ=30
+
 err_dict={}
 
 def init_err(maxq=101):
@@ -196,7 +199,7 @@ if USE_PYSAM:
 		else:
 			marker="chr%s_%s" %(split[0],split[1])
 
-		for pileupcolumn in samfile.pileup(c, pos-1, pos,min_mapping_quality=30,truncate=True):
+		for pileupcolumn in samfile.pileup(c, pos-1, pos,min_mapping_quality=MIN_MQ,truncate=True):
 
 			refbase=genome_fasta_open.fetch(reference=c,start=pos-1,end=pos)
 			bases=pileupcolumn.get_query_sequences()
@@ -262,7 +265,7 @@ else: #use subprocess to call samtools instead of using pysam for accessing the 
 	
 
 
-	cmd='samtools mpileup -B -q 30 -Q 30 -f %s -l %s %s' %(refgenome,bedfile,bamfile)
+	cmd='samtools mpileup -B -q %s -Q %s -f %s -l %s %s' %(MIN_MQ,MIN_BQ,refgenome,bedfile,bamfile)
 	process = Popen(cmd, shell=True, stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 	
 	for l in iter(process.stdout.readline,b''):
@@ -328,7 +331,7 @@ else: #use subprocess to call samtools instead of using pysam for accessing the 
 				GLs=GL_miss
 
 			
-			out_new="%s\t%s\t%s\n" %(GLs[0],GLs[1],GLs[2])
+			out_new="%f\t%f\t%f\n" %(GLs[0],GLs[1],GLs[2])
 			
 			if CORRECT:
 
@@ -341,7 +344,7 @@ else: #use subprocess to call samtools instead of using pysam for accessing the 
 				else:
 					GLs=GL_miss
 
-				out_new_cor="%s\t%s\t%s\n" %(GLs[0],GLs[1],GLs[2])
+				out_new_cor="%f\t%f\t%f\n" %(GLs[0],GLs[1],GLs[2])
 			
 				
 			outlines[outlines_index[marker]]='%s\t%s' %(outlines[outlines_index[marker]],out_new)
@@ -359,9 +362,9 @@ else: #use subprocess to call samtools instead of using pysam for accessing the 
 		pos=int(split[1])
 
 		if not found_dic[(c,pos)]:
-			outlines[i+1]='%s\t%s\t%s\t%s\n' %(outlines[i+1],1/3,1/3,1/3)
+			outlines[i+1]='%s\t%f\t%f\t%f\n' %(outlines[i+1],1/3,1/3,1/3)
 			if CORRECT:
-				outlines_cor[i+1]='%s\t%s\t%s\t%s\n' %(outlines_cor[i+1],1/3,1/3,1/3)
+				outlines_cor[i+1]='%s\t%f\t%f\t%f\n' %(outlines_cor[i+1],1/3,1/3,1/3)
 		
 
 
